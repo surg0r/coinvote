@@ -65,9 +65,9 @@ while blocks < blockheight:
 				addr = 'Q'+q.bin2hstr(w.get_addressfrompk(t.public_key).address)
 				if addr not in votes[ID.index(t.message.message_hash.decode())].addresses:
 					votes[ID.index(t.message.message_hash.decode())].addresses.append(addr)
+					votes[ID.index(t.message.message_hash.decode())].balances.append(w.get_balance(addr).balance)
 				votes[ID.index(t.message.message_hash.decode())].blocks.append(blocks)
 				votes[ID.index(t.message.message_hash.decode())].txhashes.append(t.transaction_hash)
-				votes[ID.index(t.message.message_hash.decode())].balances.append(w.get_balance(addr).balance)
 				votes[ID.index(t.message.message_hash.decode())].calculate_vote_weight(w.node_status().coins_emitted)
 
 				print('ID: ', t.message.message_hash.decode(), 'VOTEWEIGHT: ', votes[ID.index(t.message.message_hash.decode())].vw)
