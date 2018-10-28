@@ -65,7 +65,7 @@ class QRL():
         return obj
 
     def get_balance(self, address):
-        return self.stub.GetBalance(qrl_pb2.GetBalanceReq(address=hstr2bin_bytes(address[1:])))
+        return self.stub.GetBalance(qrl_pb2.GetBalanceReq(address=hstr2bin_bytes(address[1:]))).balance
 
     def get_blockbynumber(self, block_number):
         block_obj = self.stub.GetBlockByNumber(qrl_pb2.GetBlockByNumberReq(block_number=block_number))
