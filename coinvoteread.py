@@ -1,23 +1,8 @@
 # tiny script to read the pickled output of coinvote.py
 
 import pickle as pickle
-
-
-class Vote:
-	def __init__(self, id):
-		self.id = id
-		self.blocks = []
-		self.addresses = []
-		self.balances = []
-		self.txhashes =[]
-		self.vw = 0
-
-	def calculate_vote_weight(self, coins_emitted):
-		total = 0
-		for b in self.balances:
-			total = total + b
-		self.vw = total / coins_emitted * 100
-		return self.vw
+import q
+from sc import Vote
 
 # load the file
 
@@ -25,9 +10,19 @@ f = open('votes.db', 'rb')
 votes = pickle.load(f)
 f.close()
 
-# display the votes object summary
+# connect to the qrl
+
+w = q.QRL()		# instantiate the grpc connection via the wrapper
+
+
+# update balances based upon realtime data from the list of addresses in each message_tx ID
+# calculate vote weighting..
+
+for v in votes:
+	v.update_balances(w)
+	v.calculate_vote_weight(w.node_status().coins_emitted)
 
 print("QRL COINVOTE tracker:")
 for i in votes:
-	print("ID: ", i.id, "no. of TX: ", len(i.txhashes), "no. of Addresses: ", len(i.addresses), "Vote weight: ", i.vw, "%")
+	print("ID: ", i.id, "no. of TX: ", len(i.txhashes), "no. of Addresses: ", len(i.addresses_balances),'supporting coins: ', (i.total / 10 ** 9), "Vote weight: ", round(i.vw, 6), "%")
 

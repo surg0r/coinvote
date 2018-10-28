@@ -5,28 +5,11 @@
 import q
 import time
 import pickle as pickle
-
+from sc import Vote
 
 # message_tx ID's to track in the chain
 
 ID = ['ID_0001', 'ID_0002']
-
-class Vote:
-	def __init__(self, id):
-		self.id = id
-		self.blocks = []
-		self.addresses = []
-		self.balances = []
-		self.txhashes =[]
-		self.vw = 0
-
-	def calculate_vote_weight(self, coins_emitted):
-		total = 0
-		for b in self.balances:
-			total = total + b
-		self.vw = total / coins_emitted * 100
-		return self.vw
-
 
 votes = []
 
@@ -34,10 +17,9 @@ for i in ID:
 	votes.append(Vote(id=i))
 
 
-# set starting blockheight to track the chain from
+# set starting blockheight to track the chain from with variable blocks
 
-msg_tx = 177580
-blocks = msg_tx - 10
+blocks = 177583
 
 # set safety lag in case of minor forks to chain tip
 
@@ -54,7 +36,6 @@ w = q.QRL()		# instantiate the grpc connection via the wrapper
 blockheight = w.node_status().node_info.block_height
 
 # continuously track ID's whilst following the current blockheight, when approaches current blockheight the script sleeps for ten minutes then resumes the chase
-# always 
 
 while blocks < blockheight:
 	z = w.get_blockbynumber(blocks)
@@ -63,9 +44,13 @@ while blocks < blockheight:
 		if t.message.message_hash != b'':
 			if t.message.message_hash.decode() in ID:
 				addr = 'Q'+q.bin2hstr(w.get_addressfrompk(t.public_key).address)
-				if addr not in votes[ID.index(t.message.message_hash.decode())].addresses:
-					votes[ID.index(t.message.message_hash.decode())].addresses.append(addr)
-					votes[ID.index(t.message.message_hash.decode())].balances.append(w.get_balance(addr).balance)
+
+				if len(votes[ID.index(t.message.message_hash.decode())].addresses_balances) != 0:
+					if [item for item in votes[ID.index(t.message.message_hash.decode())].addresses_balances[0]] != addr:
+						votes[ID.index(t.message.message_hash.decode())].addresses_balances.append((addr, w.get_balance(addr)))
+				else:
+					votes[ID.index(t.message.message_hash.decode())].addresses_balances.append((addr, w.get_balance(addr)))
+
 				votes[ID.index(t.message.message_hash.decode())].blocks.append(blocks)
 				votes[ID.index(t.message.message_hash.decode())].txhashes.append(t.transaction_hash)
 				votes[ID.index(t.message.message_hash.decode())].calculate_vote_weight(w.node_status().coins_emitted)
