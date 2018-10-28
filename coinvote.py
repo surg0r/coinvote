@@ -23,7 +23,7 @@ blocks = 180450
 
 # set safety lag in case of minor forks to chain tip
 
-block_lag = 3
+block_lag = 5
 
 
 # connect to the QRL network via the api-wrapper, announce the ID's being watched..
@@ -35,7 +35,7 @@ w = q.QRL()		# instantiate the grpc connection via the wrapper
 
 blockheight = w.node_status().node_info.block_height
 
-# continuously track ID's whilst following the current blockheight, when approaches current blockheight the script sleeps for ten minutes then resumes the chase
+# continuously track ID's whilst following the current blockheight, when approaches current blockheight the script sleeps for some minutes then resumes the chase
 
 while blocks < blockheight:
 	z = w.get_blockbynumber(blocks)
