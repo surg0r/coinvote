@@ -19,11 +19,11 @@ for i in ID:
 
 # set starting blockheight to track the chain from with variable blocks
 
-blocks = 177583
+blocks = 180450
 
 # set safety lag in case of minor forks to chain tip
 
-block_lag = 20
+block_lag = 3
 
 
 # connect to the QRL network via the api-wrapper, announce the ID's being watched..
@@ -65,10 +65,8 @@ while blocks < blockheight:
 	if blocks >= blockheight - block_lag:
 		print('Caught up to lag blockheight, sleeping for', block_lag, ' minutes..')
 		time.sleep(60 * block_lag)
-	
+	else:
+		time.sleep(0.75)
 	blocks+=1
-	time.sleep(2)
-
-
 
 	
