@@ -70,6 +70,7 @@ while blocks < blockheight:
 		print('Caught up to lag blockheight, sleeping for', block_lag, ' minutes..')
 		time.sleep(60 * block_lag)
 	else:
+		# if connecting via localhost to node this sleep period may be ~ 0.01s without disrupting node functionality
 		time.sleep(0.75)
 	blocks+=1
 
